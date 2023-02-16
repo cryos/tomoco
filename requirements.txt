@@ -1,3 +1,6 @@
 PySide6
 qtpy
 zmq
+ophyd
+pyepics
+
