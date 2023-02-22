@@ -9,10 +9,6 @@ from qtpy.QtCore import (
     QObject,
 )
 
-from qtpy.QtGui import (
-    QIcon,
-)
-
 from qtpy.QtWidgets import (
     QApplication,
     QCommonStyle,
@@ -32,7 +28,7 @@ class App(QMainWindow):
     # Set up a few signals for the motor positions
     motorSignalZ = Signal(float)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QObject = None) -> None:
         super(App, self).__init__(parent)
         self.setWindowTitle('Tomoco: Tomography Data Acquisition')
 
@@ -85,9 +81,8 @@ class App(QMainWindow):
         self.socket = self.context.socket(zmq.PAIR)
         self.socket.connect('tcp://127.0.0.1:5556')
 
-    def buttonPressed(self):
+    def buttonPressed(self) -> None:
         # Currently being a little lame - only update state on start/stop.
-        print('Button pressed!', self.button.text())
         if self.button.text() == 'Go':
             self.button.setText('Stop')
         else:
@@ -95,22 +90,20 @@ class App(QMainWindow):
 
         self.run("scan", "([det], motor, 1, 5, 5)", "{}")
 
-    def updateMotorZ(self, value, old_value = None, timestamp = None, **kwargs):
-        print(f'new value {value}')
+    def updateMotorZ(self, value, old_value = None, timestamp = None, **kwargs) -> None:
         self.z = float(value)
         self.motorSignalZ.emit(float(value))
 
     @Slot()
-    def moveZUp(self):
+    def moveZUp(self) -> None:
         self.zps.sz.set(self.z + 20)
 
     @Slot()
-    def moveZDown(self):
+    def moveZDown(self) -> None:
         self.zps.sz.set(self.z - 20)
 
     @Slot(float)
-    def updatePositionZ(self, value):
-        print(f'Update position {value}')
+    def updatePositionZ(self, value: float) -> None:
         self.labelZ.setText(f'z = {value:4.3f}')
 
     def run(self, plan_name, args, kwargs):
