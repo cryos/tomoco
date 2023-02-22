@@ -95,9 +95,6 @@ class App(QMainWindow):
 
         self.run("scan", "([det], motor, 1, 5, 5)", "{}")
 
-    def upPressed(self):
-        self.zps
-
     def updateMotorZ(self, value, old_value = None, timestamp = None, **kwargs):
         print(f'new value {value}')
         self.z = float(value)
