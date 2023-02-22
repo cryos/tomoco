@@ -6,6 +6,7 @@ from ophyd import (
     Component as Cpt,
 )
 
+# These classes are taken from the FXI profile and are just their EPICS motors.
 class MyBaseMotor(EpicsMotor):
     dial_readback = Cpt(EpicsSignalRO, ".DRBV")
     dial_counts = Cpt(EpicsSignalRO, ".RRBV")
