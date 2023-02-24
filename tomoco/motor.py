@@ -16,6 +16,9 @@ class Motor(QObject):
         super(Motor, self).__init__(parent)
         self.pos = 0.0
         self.motor = motor
+        # FIXME: Make async but fine for now...
+        self.motor.wait_for_connection()
+        self.pos = motor.position
         self.motor.subscribe(self.updateMotor)
 
     def updateMotor(self, value, old_value = None, timestamp = None, **kwargs) -> None:

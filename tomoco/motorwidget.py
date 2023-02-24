@@ -28,8 +28,10 @@ class MotorWidget(QObject):
         if motor is None:
             raise TypeError
 
-        self.pos = 0.0
+        self._posValid = False
+        self.pos = motor.pos
         self.step = 20.0
+        self.range = [-9999, 9999]
 
         # Connect up our class to the motor signal.
         self.motor = motor
@@ -40,8 +42,10 @@ class MotorWidget(QObject):
         self._decButton = None
         self._posLineEdit = None
         self._posSpinBox = None
+        self._stepSpinBox = None
         self._posLabel = None
         self._stepLineEdit = None
+        self._limitsLabel = None
 
     @property
     def posStr(self) -> str:
@@ -78,22 +82,74 @@ class MotorWidget(QObject):
     def posSpinBox(self) -> QWidget:
         if self._posSpinBox is None:
             self._posSpinBox = QDoubleSpinBox()
+            self._posSpinBox.setMinimum(self.range[0])
+            self._posSpinBox.setMaximum(self.range[1])
             self._posSpinBox.setValue(self.pos)
             self._posSpinBox.setSingleStep(self.step)
             self._posSpinBox.setDecimals(3)
+            self._posSpinBox.valueChanged.connect(self.posChanged)
 
         return self._posSpinBox
 
     @property
+    def stepSpinBox(self) -> QWidget:
+        if self._stepSpinBox is None:
+            self._stepSpinBox = QDoubleSpinBox()
+            self._stepSpinBox.setMinimum(0)
+            self._stepSpinBox.setMaximum(1000)
+            self._stepSpinBox.setDecimals(3)
+            step = self.motor.motor.step_size.get()
+            self._stepSpinBox.setValue(step)
+            self.stepChanged(step)
+            self._stepSpinBox.valueChanged.connect(self.stepChanged)
+
+        return self._stepSpinBox
+
+    @property
     def posLabel(self) -> QWidget:
         if self._posLabel is None:
-            self._posLabel = QLabel("Unknown")
+            self._posLabel = QLabel(self.posStr)
 
         return self._posLabel
+
+    @property
+    def limitsLabel(self) -> QWidget:
+        if self._limitsLabel is None:
+            self._limitsLabel = QLabel("Undef, Undef")
+            low = self.motor.motor.low_limit.get()
+            high = self.motor.motor.high_limit.get()
+            self.range = [low, high]
+            self._limitsLabel.setText(f'({low:4.3f}, {high:4.3f})')
+            if self._posSpinBox:
+                self._posSpinBox.setMinimum(low)
+                self._posSpinBox.setMaximum(high)
+
+        return self._limitsLabel
 
     @Slot(float)
     def motorMoved(self, pos: float) -> None:
         # Check which widgets are initialized that should be updated.
         self.pos = pos
+        if not self._posValid:
+            # The widgets were initialized before the first real position.
+            self._posValid = True
+            if self._posSpinBox:
+                self._posSpinBox.blockSignals(True)
+                self._posSpinBox.setValue(self.pos)
+                self._posSpinBox.blockSignals(False)
+
         if self._posLabel:
             self._posLabel.setText(self.posStr)
+
+    @Slot(float)
+    def stepChanged(self, step: float) -> None:
+        print ('step', step)
+        self.step = step
+        if self._posSpinBox:
+            self._posSpinBox.setSingleStep(step)
+
+    @Slot(float)
+    def posChanged(self, pos: float) -> None:
+        print ('moving to:', pos)
+
+        self.motor.setPosition(pos)

@@ -43,7 +43,12 @@ class App(QMainWindow):
         self.motors['z'] = Motor(zps.sz)
         self.motors['r'] = Motor(zps.pi_r)
 
-        self.motorWidget = MotorWidget(self.motors['x'])
+        self.motorWidgets = {}
+        self.motorWidgets['x'] = MotorWidget(self.motors['x'])
+        self.motorWidgets['y'] = MotorWidget(self.motors['y'])
+        self.motorWidgets['z'] = MotorWidget(self.motors['z'])
+        self.motorWidgets['r'] = MotorWidget(self.motors['r'])
+        self.motorWidget = self.motorWidgets['x']
 
         self.z = 1000.0
 
@@ -65,7 +70,22 @@ class App(QMainWindow):
         gridLayout.addWidget(QLabel('<b>y (\xB5m)</b>'), 2, 0)
         gridLayout.addWidget(QLabel('<b>z (\xB5m)</b>'), 3, 0)
         gridLayout.addWidget(QLabel('<b>r (\xB0)</b>'), 4, 0)
-        gridLayout.addWidget(self.motorWidget.posSpinBox, 1, 3)
+        gridLayout.addWidget(self.motorWidgets['x'].posLabel, 1, 1)
+        gridLayout.addWidget(self.motorWidgets['x'].limitsLabel, 1, 2)
+        gridLayout.addWidget(self.motorWidgets['x'].posSpinBox, 1, 3)
+        gridLayout.addWidget(self.motorWidgets['x'].stepSpinBox, 1, 4)
+        gridLayout.addWidget(self.motorWidgets['y'].posLabel, 2, 1)
+        gridLayout.addWidget(self.motorWidgets['y'].limitsLabel, 2, 2)
+        gridLayout.addWidget(self.motorWidgets['y'].posSpinBox, 2, 3)
+        gridLayout.addWidget(self.motorWidgets['y'].stepSpinBox, 2, 4)
+        gridLayout.addWidget(self.motorWidgets['z'].posLabel, 3, 1)
+        gridLayout.addWidget(self.motorWidgets['z'].limitsLabel, 3, 2)
+        gridLayout.addWidget(self.motorWidgets['z'].posSpinBox, 3, 3)
+        gridLayout.addWidget(self.motorWidgets['z'].stepSpinBox, 3, 4)
+        gridLayout.addWidget(self.motorWidgets['r'].posLabel, 4, 1)
+        gridLayout.addWidget(self.motorWidgets['r'].limitsLabel, 4, 2)
+        gridLayout.addWidget(self.motorWidgets['r'].posSpinBox, 4, 3)
+        gridLayout.addWidget(self.motorWidgets['r'].stepSpinBox, 4, 4)
         #gridLayout.addWidget(self.upButton, 0, 1)
         #gridLayout.addWidget(self.downButton, 2, 1)
         #gridLayout.addWidget(self.leftButton, 1, 0)
@@ -78,8 +98,8 @@ class App(QMainWindow):
 
         self.labelZ = QLabel("Unknown")
         layout.addWidget(self.labelZ)
-        layout.addWidget(self.motorWidget.posLabel)
-        self.motorWidget.motorMoved(0.69)
+        #layout.addWidget(self.motorWidget.posLabel)
+        #self.motorWidget.motorMoved(0.69)
 
         self.button = QPushButton('Go!')
         hButtonBox = QHBoxLayout()
@@ -110,7 +130,7 @@ class App(QMainWindow):
         else:
             self.button.setText('Go')
 
-        self.run("scan", "([det], motor, 1, 5, 5)", "{}")
+        self.run("mv", "(zps.pi_r, 0.0)", "{}")
 
     def updateMotorZ(self, value, old_value = None, timestamp = None, **kwargs) -> None:
         self.z = float(value)
