@@ -23,6 +23,9 @@ from qtpy.QtWidgets import (
 )
 
 from .motors import *
+from .motor import Motor
+
+from .motorwidget import MotorWidget
 
 class App(QMainWindow):
     # Set up a few signals for the motor positions
@@ -33,6 +36,14 @@ class App(QMainWindow):
         self.setWindowTitle('Tomoco: Tomography Data Acquisition')
 
         self.zps = zps
+
+        self.motors = {}
+        self.motors['x'] = Motor(zps.sx)
+        self.motors['y'] = Motor(zps.sy)
+        self.motors['z'] = Motor(zps.sz)
+        self.motors['r'] = Motor(zps.pi_r)
+
+        self.motorWidget = MotorWidget(self.motors['x'])
 
         self.z = 1000.0
 
@@ -45,10 +56,20 @@ class App(QMainWindow):
         self.rightButton = QPushButton(style.standardIcon(QStyle.SP_ArrowRight), '')
         self.upButton = QPushButton(style.standardIcon(QStyle.SP_ArrowUp), '')
         self.downButton = QPushButton(style.standardIcon(QStyle.SP_ArrowDown), '')
-        gridLayout.addWidget(self.upButton, 0, 1)
-        gridLayout.addWidget(self.downButton, 2, 1)
-        gridLayout.addWidget(self.leftButton, 1, 0)
-        gridLayout.addWidget(self.rightButton, 1, 2)
+        gridLayout.addWidget(QLabel('<b>Variable</b>'), 0, 0)
+        gridLayout.addWidget(QLabel('<b>Readout</b>'), 0, 1)
+        gridLayout.addWidget(QLabel('<b>Limits</b>'), 0, 2)
+        gridLayout.addWidget(QLabel('<b>Set</b>'), 0, 3)
+        gridLayout.addWidget(QLabel('<b>Step</b>'), 0, 4)
+        gridLayout.addWidget(QLabel('<b>x (\xB5m)</b>'), 1, 0)
+        gridLayout.addWidget(QLabel('<b>y (\xB5m)</b>'), 2, 0)
+        gridLayout.addWidget(QLabel('<b>z (\xB5m)</b>'), 3, 0)
+        gridLayout.addWidget(QLabel('<b>r (\xB0)</b>'), 4, 0)
+        gridLayout.addWidget(self.motorWidget.posSpinBox, 1, 3)
+        #gridLayout.addWidget(self.upButton, 0, 1)
+        #gridLayout.addWidget(self.downButton, 2, 1)
+        #gridLayout.addWidget(self.leftButton, 1, 0)
+        #gridLayout.addWidget(self.rightButton, 1, 2)
         layout.addLayout(gridLayout)
         layout.addStretch()
 
@@ -57,6 +78,8 @@ class App(QMainWindow):
 
         self.labelZ = QLabel("Unknown")
         layout.addWidget(self.labelZ)
+        layout.addWidget(self.motorWidget.posLabel)
+        self.motorWidget.motorMoved(0.69)
 
         self.button = QPushButton('Go!')
         hButtonBox = QHBoxLayout()
@@ -74,8 +97,7 @@ class App(QMainWindow):
         self.button.clicked.connect(self.buttonPressed)
 
         # Connect up a motor epics signal to a Qt slot...
-        self.motorSignalZ.connect(self.updatePositionZ)
-        self.zps.sz.subscribe(self.updateMotorZ)
+        self.motors['z'].motorMoved.connect(self.updatePositionZ)
 
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PAIR)
