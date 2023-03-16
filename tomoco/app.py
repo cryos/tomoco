@@ -53,8 +53,6 @@ class App(QMainWindow):
         self.motorWidgets['r'] = MotorWidget(self.motors['r'])
         self.motorWidget = self.motorWidgets['x']
 
-        self.z = 1000.0
-
         layout = QVBoxLayout()
 
         # Cluster for motor controls
@@ -99,11 +97,6 @@ class App(QMainWindow):
         self.upButton.clicked.connect(self.moveZUp)
         self.downButton.clicked.connect(self.moveZDown)
 
-        self.labelZ = QLabel("Unknown")
-        layout.addWidget(self.labelZ)
-        #layout.addWidget(self.motorWidget.posLabel)
-        #self.motorWidget.motorMoved(0.69)
-
         self.button = QPushButton('Go!')
         hButtonBox = QHBoxLayout()
         hButtonBox.addStretch()
@@ -119,9 +112,6 @@ class App(QMainWindow):
         # Add button signal to slot to start/stop
         self.button.clicked.connect(self.buttonPressed)
 
-        # Connect up a motor epics signal to a Qt slot...
-        self.motors['z'].motorMoved.connect(self.updatePositionZ)
-
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PAIR)
         self.socket.connect('tcp://127.0.0.1:5556')
@@ -135,10 +125,6 @@ class App(QMainWindow):
 
         self.run("mv", "(zps.pi_r, 0.0)", "{}")
 
-    def updateMotorZ(self, value, old_value = None, timestamp = None, **kwargs) -> None:
-        self.z = float(value)
-        self.motorSignalZ.emit(float(value))
-
     @Slot()
     def moveZUp(self) -> None:
         self.zps.sz.set(self.z + 20)
@@ -146,10 +132,6 @@ class App(QMainWindow):
     @Slot()
     def moveZDown(self) -> None:
         self.zps.sz.set(self.z - 20)
-
-    @Slot(float)
-    def updatePositionZ(self, value: float) -> None:
-        self.labelZ.setText(f'z = {value:4.3f}')
 
     def run(self, plan_name, args, kwargs):
         to_send = json.dumps({"plan_name": plan_name, "plan_args": args, "plan_kwargs": kwargs}).encode()
