@@ -58,10 +58,6 @@ class App(QMainWindow):
         # Cluster for motor controls
         style = QCommonStyle()
         gridLayout = QGridLayout()
-        self.leftButton = QPushButton(style.standardIcon(QStyle.SP_ArrowLeft), '')
-        self.rightButton = QPushButton(style.standardIcon(QStyle.SP_ArrowRight), '')
-        self.upButton = QPushButton(style.standardIcon(QStyle.SP_ArrowUp), '')
-        self.downButton = QPushButton(style.standardIcon(QStyle.SP_ArrowDown), '')
         gridLayout.addWidget(QLabel('<b>Variable</b>'), 0, 0)
         gridLayout.addWidget(QLabel('<b>Readout</b>'), 0, 1)
         gridLayout.addWidget(QLabel('<b>Limits</b>'), 0, 2)
@@ -87,15 +83,8 @@ class App(QMainWindow):
         gridLayout.addWidget(self.motorWidgets['r'].limitsLabel, 4, 2)
         gridLayout.addWidget(self.motorWidgets['r'].posSpinBox, 4, 3)
         gridLayout.addWidget(self.motorWidgets['r'].stepSpinBox, 4, 4)
-        #gridLayout.addWidget(self.upButton, 0, 1)
-        #gridLayout.addWidget(self.downButton, 2, 1)
-        #gridLayout.addWidget(self.leftButton, 1, 0)
-        #gridLayout.addWidget(self.rightButton, 1, 2)
         layout.addLayout(gridLayout)
         layout.addStretch()
-
-        self.upButton.clicked.connect(self.moveZUp)
-        self.downButton.clicked.connect(self.moveZDown)
 
         self.button = QPushButton('Go!')
         hButtonBox = QHBoxLayout()
@@ -124,14 +113,6 @@ class App(QMainWindow):
             self.button.setText('Go')
 
         self.run("mv", "(zps.pi_r, 0.0)", "{}")
-
-    @Slot()
-    def moveZUp(self) -> None:
-        self.zps.sz.set(self.z + 20)
-
-    @Slot()
-    def moveZDown(self) -> None:
-        self.zps.sz.set(self.z - 20)
 
     def run(self, plan_name, args, kwargs):
         to_send = json.dumps({"plan_name": plan_name, "plan_args": args, "plan_kwargs": kwargs}).encode()
