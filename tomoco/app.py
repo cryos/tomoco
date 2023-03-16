@@ -22,7 +22,10 @@ from qtpy.QtWidgets import (
     QWidget,
 )
 
-from .motors import *
+if False:
+    from .motors import *
+else:
+    from .motors_simulated import *
 from .motor import Motor
 
 from .motorwidget import MotorWidget

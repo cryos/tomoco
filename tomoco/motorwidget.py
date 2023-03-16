@@ -98,7 +98,10 @@ class MotorWidget(QObject):
             self._stepSpinBox.setMinimum(0)
             self._stepSpinBox.setMaximum(1000)
             self._stepSpinBox.setDecimals(3)
-            step = self.motor.motor.step_size.get()
+            try:
+                step = self.motor.motor.step_size.get()
+            except AttributeError:
+                step = 20
             self._stepSpinBox.setValue(step)
             self.stepChanged(step)
             self._stepSpinBox.valueChanged.connect(self.stepChanged)
@@ -116,8 +119,14 @@ class MotorWidget(QObject):
     def limitsLabel(self) -> QWidget:
         if self._limitsLabel is None:
             self._limitsLabel = QLabel("Undef, Undef")
-            low = self.motor.motor.low_limit.get()
-            high = self.motor.motor.high_limit.get()
+            try:
+                low = self.motor.motor.low_limit.get()
+            except AttributeError:
+                low = -1000
+            try:
+                high = self.motor.motor.high_limit.get()
+            except AttributeError:
+                high = 1000
             self.range = [low, high]
             self._limitsLabel.setText(f'({low:4.3f}, {high:4.3f})')
             if self._posSpinBox:
