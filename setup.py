@@ -1,7 +1,14 @@
 import sys
 
 import setuptools
-import versioneer
+
+# Use versioneer if available, otherwise just pass a dummy version.
+try:
+    import versioneer
+    package_version = versioneer.get_version()
+except ImportError:
+    package_version = '0.1'
+
 
 min_version = (3, 9)
 
@@ -20,8 +27,7 @@ with open('README.md', encoding='utf-8') as readme_file:
 
 setuptools.setup(
     name='tomoco',
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+    version=package_version,
     author='Marcus D. Hanwell',
     author_email='mhanwell@bnl.gov',
     description="Data acquisition and control GUI prototype.",
