@@ -30,12 +30,12 @@ from .motor import Motor
 
 from .motorwidget import MotorWidget
 
-class App(QMainWindow):
+class MainWindow(QMainWindow):
     # Set up a few signals for the motor positions
     motorSignalZ = Signal(float)
 
     def __init__(self, parent: QObject = None) -> None:
-        super(App, self).__init__(parent)
+        super(MainWindow, self).__init__(parent)
         self.setWindowTitle('Tomoco: Tomography Data Acquisition')
 
         self.zps = zps
@@ -134,7 +134,7 @@ def run():
     app = QApplication(sys.argv)
 
     # Create and show the form
-    window = App()
+    window = MainWindow()
     window.show()
 
     # Run the main Qt loop
