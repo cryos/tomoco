@@ -44,7 +44,7 @@ setuptools.setup(
     ],
     entry_points={
         'console_scripts': [
-            'tomoco = tomoco.app:run',
+            'tomoco = tomoco.main:main',
         ]
     },
 )

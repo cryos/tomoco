@@ -1,5 +1,3 @@
-import sys
-
 import json
 import zmq
 
@@ -10,9 +8,7 @@ from qtpy.QtCore import (
 )
 
 from qtpy.QtWidgets import (
-    QApplication,
     QCommonStyle,
-    QStyle,
     QMainWindow,
     QLabel,
     QPushButton,
@@ -122,20 +118,3 @@ class MainWindow(QMainWindow):
         if msg:
             decoded_msg = json.loads(msg.decode())
             print('received', decoded_msg)
-
-
-def run():
-    # Set up some application basics for saving settings
-    QApplication.setOrganizationName('BNL')
-    QApplication.setOrganizationDomain('bnl.gov')
-    QApplication.setApplicationName('tomoco')
-
-    # Create the Qt Application
-    app = QApplication(sys.argv)
-
-    # Create and show the form
-    window = MainWindow()
-    window.show()
-
-    # Run the main Qt loop
-    sys.exit(app.exec_())
