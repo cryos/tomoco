@@ -1,4 +1,4 @@
-# Tomoco - highly experimental data acquisition GUI (Python, Qt)
+# Tomoco: experimental data acquisition GUI (Python, Qt)
 
 Early stage experiment currently building out an approach to be used at the FXI
 beamline at the National Synchrotron Light Source II (NSLS-II). It makes use of
