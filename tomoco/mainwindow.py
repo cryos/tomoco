@@ -8,7 +8,6 @@ from qtpy.QtCore import (
 )
 
 from qtpy.QtWidgets import (
-    QCommonStyle,
     QMainWindow,
     QLabel,
     QPushButton,
@@ -52,7 +51,6 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
 
         # Cluster for motor controls
-        style = QCommonStyle()
         gridLayout = QGridLayout()
         gridLayout.addWidget(QLabel('<b>Variable</b>'), 0, 0)
         gridLayout.addWidget(QLabel('<b>Readout</b>'), 0, 1)
