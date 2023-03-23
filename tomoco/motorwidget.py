@@ -152,7 +152,6 @@ class MotorWidget(QObject):
 
     @Slot(float)
     def stepChanged(self, step: float) -> None:
-        print ('step', step)
         self.step = step
         if self._posSpinBox:
             self._posSpinBox.setSingleStep(step)
